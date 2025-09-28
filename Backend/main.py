@@ -27,7 +27,8 @@ def read_root():
 def health_check(db: Session = Depends(get_db)):
     # Simple DB health check
     try:
-        db.execute("SELECT 1")
+        from sqlalchemy import text
+        db.execute(text("SELECT 1"))
         return {"status": "healthy", "database": "connected"}
     except Exception as e:
         return {"status": "unhealthy", "database": str(e)}
