@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from database import engine, SessionLocal, get_db
 from models import Base
-from routers.users import router
+from routers.users import router as users_router
+from routers.shoutouts import router as shoutouts_router
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -33,4 +34,5 @@ def health_check(db: Session = Depends(get_db)):
     except Exception as e:
         return {"status": "unhealthy", "database": str(e)}
 
-app.include_router(router)
+app.include_router(users_router)
+app.include_router(shoutouts_router)

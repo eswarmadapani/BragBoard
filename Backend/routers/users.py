@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 from database import get_db
 from models import User
-from auth import hash_password, verify_password, create_access_token, create_refresh_token
+from auth import hash_password, verify_password, create_access_token, create_refresh_token, get_current_user
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -22,6 +22,17 @@ class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
+
+class UserProfile(BaseModel):
+    id: int
+    name: str
+    email: str
+    department: str
+    role: str
+    joined_at: str
+    
+    class Config:
+        from_attributes = True
 
 @router.post("/register", response_model=TokenResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):
@@ -63,3 +74,15 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     refresh_token = create_refresh_token(data={"sub": db_user.email})
     
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
+
+@router.get("/profile", response_model=UserProfile)
+def get_user_profile(current_user: User = Depends(get_current_user)):
+    """Get current user's profile information"""
+    return UserProfile(
+        id=current_user.id,
+        name=current_user.name,
+        email=current_user.email,
+        department=current_user.department,
+        role=current_user.role,
+        joined_at=current_user.joined_at.isoformat()
+    )
