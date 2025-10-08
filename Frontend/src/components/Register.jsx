@@ -42,10 +42,21 @@ const Register = ({ onSuccess, onToggleMode }) => {
       const { confirmPassword, ...registrationData } = formData;
       console.log('Form data before sending:', registrationData);
       
-      const response = await apiService.register(registrationData);
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('refresh_token', response.refresh_token);
-      onSuccess(response);
+      // First, register to get tokens
+      const registerResponse = await apiService.register(registrationData);
+      localStorage.setItem('access_token', registerResponse.access_token);
+      localStorage.setItem('refresh_token', registerResponse.refresh_token);
+      
+      // Then, fetch user profile data
+      const userProfile = await apiService.getUserProfile();
+      
+      // Combine tokens with user profile data
+      const userData = {
+        ...registerResponse,
+        ...userProfile
+      };
+      
+      onSuccess(userData);
     } catch (err) {
       console.error('Registration error in component:', err);
       setError(err.message);
@@ -110,16 +121,23 @@ const Register = ({ onSuccess, onToggleMode }) => {
             
             <div>
               <label htmlFor="department" className="block text-sm font-medium text-gray-700">Department</label>
-              <input
+              <select
                 id="department"
                 name="department"
-                type="text"
                 required
                 value={formData.department}
                 onChange={handleChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                placeholder="e.g., Engineering, Marketing"
-              />
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              >
+                <option value="">Select your department</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Sales">Sales</option>
+                <option value="Human Resources">Human Resources</option>
+                <option value="Finance">Finance</option>
+                <option value="Design">Design</option>
+                <option value="Operations">Operations</option>
+              </select>
             </div>
             
             <div>

@@ -23,10 +23,21 @@ const Login = ({ onSuccess, onToggleMode }) => {
     setError('');
 
     try {
-      const response = await apiService.login(formData);
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('refresh_token', response.refresh_token);
-      onSuccess(response);
+      // First, login to get tokens
+      const loginResponse = await apiService.login(formData);
+      localStorage.setItem('access_token', loginResponse.access_token);
+      localStorage.setItem('refresh_token', loginResponse.refresh_token);
+      
+      // Then, fetch user profile data
+      const userProfile = await apiService.getUserProfile();
+      
+      // Combine tokens with user profile data
+      const userData = {
+        ...loginResponse,
+        ...userProfile
+      };
+      
+      onSuccess(userData);
     } catch (err) {
       setError(err.message);
     } finally {

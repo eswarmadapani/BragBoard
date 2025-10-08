@@ -54,6 +54,32 @@ class ApiService {
     }
   }
 
+  async getUserProfile() {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('No access token found');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/users/profile`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to fetch user profile');
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw new Error(error.message || 'Network error during profile fetch');
+    }
+  }
+
   async checkHealth() {
     try {
       const response = await fetch(`${API_BASE_URL}/health`);
