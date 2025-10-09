@@ -1,13 +1,5 @@
 # BragBoard Project - Complete Documentation Report
 
-## 📋 Project Overview
-
-**Project Name:** BragBoard - Employee Achievement Management System  
-**Student:** [Your Name]  
-**Course:** [Course Name]  
-**Submission Date:** September 30, 2025  
-**GitHub Repository:** https://github.com/eswarmadapani/BragBoard.git
-
 ### Project Description
 BragBoard is a full-stack web application designed to manage employee achievements, skills, and departmental information. It features secure user authentication, role-based access control, and a modern responsive interface built with industry-standard technologies.
 
